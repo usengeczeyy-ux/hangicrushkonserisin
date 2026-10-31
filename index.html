@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangi CRUSH Konser Performansısın?</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: #fde2e4; /* Toz Pembe Arka Plan */
+        }
+        .soft-shadow {
+            box-shadow: 0 10px 30px -5px rgba(244, 114, 182, 0.25);
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex items-center justify-center p-4 selection:bg-pink-300 selection:text-pink-900">
+
+    <div class="max-w-xl w-full bg-[#fef08a] border-2 border-amber-200/80 rounded-3xl p-6 md:p-10 soft-shadow relative overflow-hidden">
+        
+        <!-- Dekoratif Tatlı Pembe/Sarı Parıltı Efektleri -->
+        <div class="absolute -top-32 -right-32 w-64 h-64 bg-pink-300/40 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-32 -left-32 w-64 h-64 bg-amber-300/40 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- BAŞLANGIÇ EKRANI -->
+        <div id="start-screen" class="text-center space-y-6 relative z-10">
+            <div class="inline-flex items-center gap-2 bg-pink-200/80 text-pink-800 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider border border-pink-300">
+                ✨ Özel Kişilik Testi
+            </div>
+            <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-pink-950">
+                Hangi CRUSH Konser Performansısın?
+            </h1>
+            <p class="text-amber-950/80 text-sm md:text-base leading-relaxed max-w-md mx-auto font-medium">
+                8 farklı şehir ve konser konseptinden hangisi senin enerjini yansıtıyor? Soruları yanıtla ve sahnedeki ikizini keşfet!
+            </p>
+            <button onclick="startTest()" class="w-full py-4 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 font-bold text-lg rounded-2xl shadow-md transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 text-white">
+                Teste Başla 🚀
+            </button>
+        </div>
+
+        <!-- SORU EKRANI -->
+        <div id="quiz-screen" class="hidden space-y-6 relative z-10">
+            <div class="flex justify-between items-center text-xs font-bold text-pink-900 uppercase tracking-wider">
+                <span id="question-count" class="bg-amber-100/90 px-3 py-1 rounded-lg border border-amber-300">Soru 1/7</span>
+                <span id="progress-text" class="text-pink-600 font-extrabold">%14</span>
+            </div>
+            <!-- İlerleme Çubuğu -->
+            <div class="w-full bg-amber-200/60 h-3 rounded-full overflow-hidden p-0.5 border border-amber-300">
+                <div id="progress-bar" class="bg-gradient-to-r from-pink-500 to-purple-500 h-full w-0 rounded-full transition-all duration-500 shadow-sm"></div>
+            </div>
+
+            <h2 id="question-title" class="text-xl md:text-2xl font-bold text-pink-950 min-h-[4rem] flex items-center leading-snug"></h2>
+            
+            <div id="options-container" class="space-y-3">
+                <!-- Şıklar buraya gelecek -->
+            </div>
+        </div>
+
+        <!-- SONUÇ EKRANI -->
+        <div id="result-screen" class="hidden space-y-6 text-center relative z-10">
+            <div class="inline-flex items-center gap-2 bg-pink-200/80 text-pink-800 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider border border-pink-300">
+                🎉 Karakter Analizin Tamamlandı
+            </div>
+            <h2 class="text-xl md:text-2xl font-bold text-amber-950">Senin Konser Performansın:</h2>
+            
+            <!-- Sonuç Kartı (Sadece Konser Adı ve Fotoğraf) -->
+            <div class="bg-amber-100/80 border-2 border-amber-300 p-5 rounded-2xl space-y-4 text-center shadow-sm">
+                <div id="result-image-container" class="w-full h-80 rounded-xl overflow-hidden bg-pink-100 flex items-center justify-center border border-amber-200 shadow-inner">
+                    <!-- Görsel buraya gelecek -->
+                </div>
+                <div>
+                    <h3 id="result-title" class="text-2xl md:text-3xl font-extrabold text-pink-600 tracking-wide"></h3>
+                </div>
+            </div>
+
+            <button onclick="restartTest()" class="w-full py-4 bg-pink-500 hover:bg-pink-600 font-bold rounded-2xl transition-all duration-200 text-white shadow-md active:scale-95">
+                Testi Tekrar Çöz 🔄
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        const questions = [
+            {
+                title: "Bir CRUSH konserine gitmeden önceki gün hazırlığın nasıl olur?",
+                options: [
+                    { text: "Aylar öncesinden kombinimi planlarım, en iddialı ve parıltılı parçaları seçerim.", resultKey: 0 },
+                    { text: "İlk günün heyecanı atıldıktan sonra, en rahat ama en havalı tarzımı denerim.", resultKey: 1 },
+                    { text: "Enerjim yüksek, kalabalığa ve coşkuya ayak uyduracak streetwear tarzımla hazırın.", resultKey: 2 },
+                    { text: "Sahil havasına uygun, hem rahat hem de rüzgârı hissedebileceğim dinamik bir kombin.", resultKey: 3 },
+                    { text: "İzmir'in o özgür ve festival havasına tam uyum sağlayan renkli parçalar seçerim.", resultKey: 4 },
+                    { text: "Ortamın enerjisini üzerimde taşıyacak ferah ama dikkat çekici stiller.", resultKey: 5 },
+                    { text: "İçimdeki sanatsal ve yaratıcı ruhu yansıtan özgün detaylar eklerim.", resultKey: 6 },
+                    { text: "Güçlü, net ve vurucu bir tarzla, adeta sahneye çıkacakmış gibi iddialı.", resultKey: 7 }
+                ]
+            },
+            {
+                title: "Konser alanına vardığında ilk yaptığın şey nedir?",
+                options: [
+                    { text: "En ön sırayı kapmak için kapıda saatlerce beklemek ve en önde yerimi almak.", resultKey: 0 },
+                    { text: "Arkadaşlarla bolca fotoğraf çekilip bu anı ölümsüzleştirmek.", resultKey: 1 },
+                    { text: "Çalan müziklerle baştan ısınmaya başlamak ve ritme ayak uydurmak.", resultKey: 2 },
+                    { text: "Etraftakilerle tanışıp oradaki o dev kitle enerjisini içine çekmek.", resultKey: 3 },
+                    { text: "En coşkulu grubun arasına karışıp  kaynaşmak", resultKey: 4 },
+                    { text: "Açık havanın tadını doyasiya çıkarmak.", resultKey: 5 },
+                    { text: "Konserin detaylarını, sahne ışıklarını ve atmosferi incelemek.", resultKey: 6 },
+                    { text: "\"İşte şimdi başladı\" diyerek müziğin sesine kendini tamamen bırakmak.", resultKey: 7 }
+                ]
+            },
+            {
+                title: "Konser sırasında seni en çok ne çılgına çevirir?",
+                options: [
+                    { text: "Grubun sahneye ilk defa adım attığı o ilk saniye ve patlayan alkışlar.", resultKey: 0 },
+                    { text: "Şarkıların sözlerini tüm salonun dev bir koro halinde hep bir ağızdan söylemesi.", resultKey: 1 },
+                    { text: "Basların vurduğu o anki titreşim ve sahnedeki devasa dans koreografisi.", resultKey: 2 },
+                    { text: "Üyelerin seyirciyle birebir göz teması kurup gülümsemesi.", resultKey: 3 },
+                    { text: "Açık havada gökyüzünün altında müziğin rüzgarla karışması.", resultKey: 4 },
+                    { text: "Hareketli şarkılarda herkesin aynı anda zıpladığı o dev enerji patlaması.", resultKey: 5 },
+                    { text: "Akustik veya sürpriz bir anın gruba olan hayranlığı ikiye katlaması.", resultKey: 6 },
+                    { text: "Konserin en doruk noktasında patlayan görsel ve ışık şovları.", resultKey: 7 }
+                ]
+            },
+            {
+                title: "Beklenmedik bir kriz anında (örneğin bilet veya sıra sorunu) nasıl tepki verirsin?",
+                options: [
+                    { text: "Anında B planı yaparım, panik yapmadan çözüm bulur ve ilk anın heyecanını bozmam.", resultKey: 0 },
+                    { text: "Pratik zekamı kullanırım, ortama hemen ayak uydurup eğlenmeye devam ederim.", resultKey: 1 },
+                    { text: "Hiç umursamam, ortamın o coşkusu her şeye bedeldir.", resultKey: 2 },
+                    { text: "Sakin kalırım, derin bir nefes alıp o anın getirdiği akışa teslim olurum.", resultKey: 3 },
+                    { text: "Etrafımdakileri neşelendirip krizi bile dev bir eğlenceye dönüştürürüm.", resultKey: 4 },
+                    { text: "Pozitif kalıp enerjimi asla düşürmem.", resultKey: 5 },
+                    { text: "Olayı analiz eder, \"Bu da anı oldu\" deyip geçerim.", resultKey: 6 },
+                    { text: "Hırslıyım! Ne yapıp eder o engeli aşar, istediğimi alırım.", resultKey: 7 }
+                ]
+            },
+            {
+                title: "Müzik dinlerken seni en çok çeken şey nedir?",
+                options: [
+                    { text: "Şarkının yarattığı o ilk etki, yüksek enerji ve ilk dinleyişteki büyü.", resultKey: 0 },
+                    { text: "Melodinin kusursuz ritmi ve her detayın mükemmel uyumu.", resultKey: 1 },
+                    { text: "Derin bass vuruşları ve insanı harekete geçiren güçlü altyapı.", resultKey: 2 },
+                    { text: "Duygusal ve ruhu dinlendiren romantik vokaller.", resultKey: 3 },
+                    { text: "İnsana neşe veren, dans ettiren ve modunu yükselten dinamik ritimler.", resultKey: 4 },
+                    { text: "Parlak, enerjik ve yaz günlerini hatırlatan ferah tınılar.", resultKey: 5 },
+                    { text: "Sözlerdeki derin anlamlar, hikaye anlatıcılığı ve özgün fikirler.", resultKey: 6 },
+                    { text: "Sınırları zorlayan, yüksek vokaller ve vurucu final bölümleri.", resultKey: 7 }
+                ]
+            },
+            {
+                title: "Bir grup içinde insanlara ilham veren temel özelliğin hangisidir?",
+                options: [
+                    { text: "Öncü ve cesur olmam; ilk adımı her zaman benim atmam.", resultKey: 0 },
+                    { text: "Dengeli ve güvenilir olmam; her şeyi planlı ve akıcı yürütmem.", resultKey: 1 },
+                    { text: "Doğallığım ve samimiyetim; hiç yapmacık olmamam.", resultKey: 2 },
+                    { text: "Naifliğim, empati yeteneğim ve insanlara huzur vermem.", resultKey: 3 },
+                    { text: "Enerjim ve coşkum; girdiğim ortama neşe katmam.", resultKey: 4 },
+                    { text: "Sıcakkanlılığımla herkesi kucaklayabilmem.", resultKey: 5 },
+                    { text: "Yaratıcılığım ve farklı bakış açıları sunabilmem.", resultKey: 6 },
+                    { text: "Kararlılığım ve tutkum; istediğimi alana kadar durmamam.", resultKey: 7 }
+                ]
+            },
+            {
+                title: "Konser bittiğinde ve ışıklar yandığında ne hissedersin?",
+                options: [
+                    { text: "\"İnanılmaz bir şeyin başlangıcına tanıklık ettim\" heyecanı.", resultKey: 0 },
+                    { text: "\"Her anı kusursuzdu, doya doya yaşadım\" tatmini.", resultKey: 1 },
+                    { text: "\"Sesim kısıldı ama buna tamamen değdi\" coşkusu.", resultKey: 2 },
+                    { text: "\"Ruhum tazelendi, sanki hafifledim\" huzuru.", resultKey: 3 },
+                    { text: "\"Yarın bir daha olsa keşke\" isteği.", resultKey: 4 },
+                    { text: "\"İçimde konserin enerjisi kaldı\"", resultKey: 5 },
+                    { text: "\"Zihnime harika anılar kazındı.\"", resultKey: 6 },
+                    { text: "\"Adrenalinim halen tavan, konserden sonra şarkı söylemeye devam edeceğim\"", resultKey: 7 }
+                ]
+            }
+        ];
+
+        const results = [
+            {
+                title: "İstanbul 1. Gün",
+                image: "Screenshot_20261031_195051_Instagram.jpg"
+            },
+            {
+                title: "İstanbul 2. Gün",
+                image: "Screenshot_20261031_195046_Instagram.jpg"
+            },
+            {
+                title: "Ankara",
+                image: "Screenshot_20261031_195031_Instagram.jpg"
+            },
+            {
+                title: "İzmir 1. Gün",
+                image: "Screenshot_20261031_195024_Instagram.jpg"
+            },
+            {
+                title: "İzmir 2. Gün",
+                image: "Screenshot_20261031_195009_Instagram.jpg"
+            },
+            {
+                title: "Antalya",
+                image: "Screenshot_20261031_195000_Instagram.jpg"
+            },
+            {
+                title: "Eskişehir",
+                image: "Screenshot_20261031_194946_Instagram.jpg"
+            },
+            {
+                title: "Adana",
+                image: "HUXmfRHWAAASB4J.jpg"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let scores = new Array(8).fill(0);
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const questionTitle = document.getElementById('question-title');
+        const optionsContainer = document.getElementById('options-container');
+        const questionCount = document.getElementById('question-count');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+
+        function startTest() {
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestion >= questions.length) {
+                showResult();
+                return;
+            }
+
+            const q = questions[currentQuestion];
+            questionTitle.textContent = q.title;
+            questionCount.textContent = `Soru ${currentQuestion + 1}/${questions.length}`;
+            
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressText.textContent = `%${Math.round(progress)}`;
+
+            optionsContainer.innerHTML = '';
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left p-4 rounded-2xl bg-amber-100/90 hover:bg-pink-200/90 hover:border-pink-400 border border-amber-300/80 transition-all duration-200 text-sm md:text-base font-semibold text-pink-950 shadow-sm transform hover:-translate-y-0.5';
+                btn.textContent = opt.text;
+                btn.onclick = () => selectOption(opt.resultKey);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(resultKey) {
+            scores[resultKey]++;
+            currentQuestion++;
+            loadQuestion();
+        }
+
+        function showResult() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+
+            let maxScore = -1;
+            let bestResultIndex = 0;
+            scores.forEach((score, index) => {
+                if (score > maxScore) {
+                    maxScore = score;
+                    bestResultIndex = index;
+                }
+            });
+
+            const res = results[bestResultIndex];
+            document.getElementById('result-title').textContent = res.title;
+            document.getElementById('result-image-container').innerHTML = `<img src="${res.image}" alt="${res.title}" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">`;
+        }
+
+        function restartTest() {
+            currentQuestion = 0;
+            scores.fill(0);
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
